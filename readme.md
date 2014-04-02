@@ -8,7 +8,8 @@ MIT
 
 #### Dependencies
 
-jQuery 1.7
+- jQuery 1.7
+- [matopeto/form](https://github.com/matopeto/form) (for file upload support)
 
 ## Installation
 
