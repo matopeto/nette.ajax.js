@@ -1,10 +1,9 @@
 {
-	"name": "nette.ajax.js",
+	"name": "nette.ajax.js-matopeto",
 	"license": "MIT",
 	"keywords": ["nette", "ajax", "jquery"],
 	"main": "nette.ajax.js",
 	"ignore": [
-		"extensions/*",
 		"CONTRIBUTING.md",
 		"example.js",
 		"readme.md"
