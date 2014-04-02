@@ -7,6 +7,9 @@
  * @license MIT
  *
  * @version 1.2.2
+ *
+ * Modifikacia podla http://forum.nette.org/cs/15283-nette-ajax-jquery-form-soubory-pomoci-ajaxu
+ * ale nie tak uplne.
  */
 
 (function(window, $, undefined) {
@@ -28,7 +31,8 @@ var nette = function () {
 			start: {},
 			success: {},
 			complete: {},
-			error: {}
+			error: {},
+			uploadProgress: {}
 		},
 		fire: function () {
 			var result = true;
@@ -91,7 +95,7 @@ var nette = function () {
 		} else if (callbacks === undefined) {
 			return inner.contexts[name];
 		} else if (!callbacks) {
-			$.each(['init', 'load', 'prepare', 'before', 'start', 'success', 'complete', 'error'], function (index, event) {
+			$.each(['init', 'load', 'prepare', 'before', 'start', 'success', 'complete', 'error', 'uploadProgress'], function (index, event) {
 				inner.on[event][name] = undefined;
 			});
 			inner.contexts[name] = undefined;
@@ -219,7 +223,20 @@ var nette = function () {
 			return result;
 		};
 
-		return this.handleXHR($.ajax(settings), settings);
+		if (settings.nette && settings.nette.form) {
+			$.extend(settings, {
+				returnJqxhr: true,
+				uploadProgress: function(event, position, total, percentComplete) {
+					inner.fire({
+						name: 'uploadProgress',
+						off: settings.off || {}
+					}, position, total, percentComplete);
+				}
+			});
+			return this.handleXHR(settings.nette.form.ajaxSubmit(settings), settings);
+		} else {
+			return this.handleXHR($.ajax(settings), settings);
+		}
 	};
 
 	/**
@@ -359,6 +376,10 @@ $.nette.ext('forms', {
 		});
 	},
 	prepare: function (settings) {
+		// Tu sme menili to, ze tento plugin nebude serializovat jednotlive polozky.
+		// o to sa stara jquery.form.
+		// Tento plugin vlastne doplni akurat informacie o odosielacom tlacitku.
+
 		var analyze = settings.nette;
 		if (!analyze || !analyze.form) return;
 		var e = analyze.e;
@@ -380,11 +401,9 @@ $.nette.ext('forms', {
 			}
 		}
 
-		if (typeof originalData !== 'string') {
-			originalData = $.param(originalData);
-		}
-		formData = $.param(formData);
-		settings.data = analyze.form.serialize() + (formData ? '&' + formData : '') + '&' + originalData;
+		$.extend(originalData, formData);
+
+		settings.data = originalData;
 	}
 });
 
