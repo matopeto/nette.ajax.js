@@ -10,7 +10,6 @@
 	],
 	"dependencies": {
 		"jquery": ">=1.7.0",
-		"nette-forms": "2.1.0",
 		"jquery.form-matopeto": "git://github.com/matopeto/form.git#master"
 	}
 }
